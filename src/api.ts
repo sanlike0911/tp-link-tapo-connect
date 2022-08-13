@@ -127,7 +127,9 @@ export const turnOn = async (deviceKey: TapoDeviceKey, deviceOn: boolean = true)
     "method": "set_device_info",
     "params":{
       "device_on": deviceOn,
-    }
+    },
+    "requestTimeMils": (new Date()).getTime(),
+    "terminalUUID": "00-00-00-00-00-00"
   }
   await securePassthrough(turnDeviceOnRequest, deviceKey)
 }
@@ -141,7 +143,9 @@ export const setBrightness = async (deviceKey: TapoDeviceKey, brightnessLevel: n
     "method": "set_device_info",
     "params":{
       "brightness": brightnessLevel,
-    }
+    },
+    "requestTimeMils": (new Date()).getTime(),
+    "terminalUUID": "00-00-00-00-00-00"
   }
   await securePassthrough(setBrightnessRequest, deviceKey)
 }
@@ -151,14 +155,18 @@ export const setColour = async (deviceKey: TapoDeviceKey, colour: string = 'whit
 
   const setColourRequest = {
     "method": "set_device_info",
-    params
+    params,
+    "requestTimeMils": (new Date()).getTime(),
+    "terminalUUID": "00-00-00-00-00-00"
   }
   await securePassthrough(setColourRequest, deviceKey)
 }
 
 export const getDeviceInfo = async (deviceKey: TapoDeviceKey): Promise<TapoDeviceInfo> => {
   const statusRequest = {
-    "method": "get_device_info"
+    "method": "get_device_info",
+    "requestTimeMils": (new Date()).getTime(),
+    "terminalUUID": "00-00-00-00-00-00"
   }
   return augmentTapoDeviceInfo(await securePassthrough(statusRequest, deviceKey))
 }
