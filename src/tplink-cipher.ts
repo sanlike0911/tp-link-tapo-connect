@@ -47,11 +47,13 @@ export const readDeviceKey = (pemKey: string, privateKey: KeyObject) : Buffer =>
     return deviceKey;
 }
 
+
 export const base64Encode = (data: string) : string => {
     return Buffer.from(data).toString('base64');
 }
 
 export const base64Decode = (data: string) : string => {
+    if (!data) return ''
     return Buffer.from(data, 'base64').toString();
 }
 
