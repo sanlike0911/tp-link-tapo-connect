@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Current TS File",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "program": "${workspaceFolder}/dist/examples/${fileBasenameNoExtension}.js",
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js"
+      ],
+      "runtimeArgs": [
+        "-r",
+        "dotenv/config"
+      ],
+      "args": [
+        "${file}"
+      ],
+      "sourceMaps": true,
+      "internalConsoleOptions": "neverOpen",
+      "console": "integratedTerminal"
+    }
+  ]
+}

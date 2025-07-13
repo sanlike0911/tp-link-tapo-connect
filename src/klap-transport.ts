@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createCipheriv, randomBytes, createHash, createDecipheriv } from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 import { TapoDevice } from './tapo-device';
 import { checkError } from './tapo-utils';
 
@@ -8,6 +9,8 @@ import { checkError } from './tapo-utils';
 const AES_CIPHER_ALGORITHM = 'aes-128-cbc'
 
 export const loginDeviceByIp = async (email: string, password: string, deviceIp: string) => {
+    const terminalUUID = uuidv4();
+
     // handshake1
     const localSeed = randomBytes(16)
     
@@ -52,10 +55,10 @@ export const loginDeviceByIp = async (email: string, password: string, deviceIp:
         throw new Error(`handshake2 failed: ${error}`)
     });
     
-    return createKlapEncryptionSession(deviceIp, localSeed, remoteSeed, localAuthHash, sessionCookie)
+    return createKlapEncryptionSession(deviceIp, localSeed, remoteSeed, localAuthHash, sessionCookie, terminalUUID)
 }
 
-const createKlapEncryptionSession = (deviceIp: string, localSeed: Buffer, remoteSeed: Buffer, userHash: Buffer, sessionCookie: String) => {
+const createKlapEncryptionSession = (deviceIp: string, localSeed: Buffer, remoteSeed: Buffer, userHash: Buffer, sessionCookie: string, terminalUUID: string) => {
     const key = deriveKey(localSeed, remoteSeed, userHash);
     const iv = deriveIv(localSeed, remoteSeed, userHash);
     const sig = deriveSig(localSeed, remoteSeed, userHash);
@@ -84,7 +87,12 @@ const createKlapEncryptionSession = (deviceIp: string, localSeed: Buffer, remote
     const send = async (deviceRequest: any):Promise<any> => {
         seq = incrementSeq(seq)
 
-        const encryptedRequest = encryptAndSign(deviceRequest)
+        const klapRequest = {
+            ...deviceRequest,
+            terminalUUID,
+            requestTimeMils: Date.now(),
+        }
+        const encryptedRequest = encryptAndSign(klapRequest)
             
         const response = await axios({
             method: 'post',
